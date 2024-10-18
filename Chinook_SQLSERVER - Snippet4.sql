@@ -1,8 +1,6 @@
-
 /*******************************************************************************
    Populate Tables
 ********************************************************************************/
-use Lab11_2255146;
 
 INSERT INTO Genre (GenreId, Name) VALUES (1, 'Rock');
 INSERT INTO Genre (GenreId, Name) VALUES (2, 'Jazz');

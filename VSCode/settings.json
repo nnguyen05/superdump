@@ -1,0 +1,16 @@
+{
+    "workbench.colorTheme": "Hyper Ctrl Theme",
+    "vscode-neovim.neovimExecutablePaths.win32": "C:\\Users\\Public\\nvim\\bin\\nvim.exe",
+    "workbench.colorCustomizations": {
+        "terminal.background": "#00000000"
+    },
+    "workbench.settings.applyToAllProfiles": [
+        "workbench.colorCustomizations"
+    ],
+    "editor.fontFamily": "Hack, 'JetBrains Mono', Consolas, 'Courier New', monospace",
+    "extensions.experimental.affinity": {
+        "asvetliakov.vscode-neovim": 1
+    },
+    "fiveServer.php.executable": "C:\\PHP\\php.exe",
+    "terminal.integrated.defaultProfile.windows": "Command Prompt"
+}

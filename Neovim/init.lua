@@ -1,8 +1,5 @@
 local vim = vim
 
-vim.cmd("color vim")
-vim.cmd("set nowrap")
-
 local plug = vim.fn["plug#"]
 vim.call("plug#begin")
 	plug("neovim/nvim-lspconfig")
@@ -16,6 +13,9 @@ vim.call("plug#begin")
 	
 	plug("udalov/kotlin-vim")
 vim.call("plug#end")
+
+vim.cmd("silent! color vim")
+vim.cmd("silent! set nowrap")
 
 local cmp = require("cmp")
 cmp.setup({

@@ -1,3 +1,0 @@
-asvetliakov.vscode-neovim
-bprabhus.hyper-ctrl-theme
-yandeu.five-server

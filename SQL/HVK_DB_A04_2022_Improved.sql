@@ -8,19 +8,19 @@
 use master;
 go
 
-if exists (select * from sys.databases where name = 'J10A04_2255146')
+if exists (select * from sys.databases where name = 'J10A04_STUDENTNO')
 begin
-	drop database J10A04_2255146;
+	drop database J10A04_STUDENTNO;
 end
 go
 
-if not exists (select * from sys.databases where name = 'J10A04_2255146')
+if not exists (select * from sys.databases where name = 'J10A04_STUDENTNO')
 begin
-	create database J10A04_2255146;
+	create database J10A04_STUDENTNO;
 end
 go
 
-use J10A04_2255146;
+use J10A04_STUDENTNO;
 go
 
 DROP TABLE IF EXISTS [HVK_CAT] 

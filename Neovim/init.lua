@@ -12,6 +12,26 @@ require("config.lazy")
 
 local cmp = require("cmp")
 local lspconfig = require("lspconfig")
+local dap = require("dap")
+local dapui = require("dapui")
+
+vim.g.clipboard = {
+	["name"] = "WslClipboard",
+	["copy"] = {
+		 ["+"] = "clip.exe",
+		 ["*"] = "clip.exe",
+	 },
+	["paste"] = {
+		 ["+"] = "powershell.exe -NoLogo -NoProfile -c Get-Clipboard",
+		 ["*"] = "powershell.exe -NoLogo -NoProfile -c Get-Clipboard",
+	},
+	["cache_enabled"] = 0,
+}
+
+
+vim.diagnostic.config({
+	virtual_text = false
+})
 
 cmp.setup({
 	snippet = {
@@ -106,3 +126,85 @@ lspconfig.ts_ls.setup {
 	root_dir = lspconfig.util.root_pattern("tsconfig.json", "jsconfig.json", "package.json", ".git"),
 	single_file_support = true,
 }
+
+
+lspconfig.mojo.setup{}
+
+lspconfig.sourcekit.setup{}
+
+--lspconfig.phpactor.setup{}
+lspconfig.intelephense.setup{}
+
+lspconfig.omnisharp.setup{
+    cmd = { "dotnet", "/home/giannis/junk/omnisharp/OmniSharp.dll" },
+}
+
+dapui.setup()
+
+dap.adapters.php = {
+	type = "executable",
+	command = "node",
+	args = { os.getenv("HOME") .. "/builtjunk/vscode-php-debug/out/phpDebug.js" },
+}
+
+dap.configurations.php = {
+	{
+		type = "php",
+		request = "launch",
+		name = "Listen for Xdebug",
+		port = 9003,
+	}
+}
+
+function PrintDiagnostics(opts, bufnr, line_nr, client_id)
+	bufnr = bufnr or 0
+	line_nr = line_nr or (vim.api.nvim_win_get_cursor(0)[1] - 1)
+	opts = opts or {['lnum'] = line_nr}
+
+	local line_diagnostics = vim.diagnostic.get(bufnr, opts)
+	if vim.tbl_isempty(line_diagnostics) then return end
+
+	local diagnostic_message = ""
+	for i, diagnostic in ipairs(line_diagnostics) do
+		diagnostic_message = diagnostic_message .. string.format("%d: %s", i, diagnostic.message or "")
+		print(diagnostic_message)
+		if i ~= #line_diagnostics then
+			diagnostic_message = diagnostic_message .. "\n"
+		end
+	end
+	vim.api.nvim_echo({{diagnostic_message, "Normal"}}, false, {})
+end
+
+-- You will likely want to reduce updatetime which affects CursorHold
+-- note: this setting is global and should be set only once
+vim.o.updatetime = 250
+vim.api.nvim_create_autocmd({ "CursorHold", "CursorHoldI" }, {
+	group = vim.api.nvim_create_augroup("float_diagnostic", { clear = true }),
+	callback = function ()
+		vim.diagnostic.open_float(nil, {focus=false})
+	end
+})
+
+vim.keymap.set("n", "<F5>", function() dap.continue() end)
+vim.keymap.set("n", "<F10>", function() dap.step_over() end)
+vim.keymap.set("n", "<F11>", function() dap.step_into() end)
+vim.keymap.set("n", "<F12>", function() dap.step_out() end)
+vim.keymap.set("n", "<Leader>b", function() dap.toggle_breakpoint() end)
+vim.keymap.set("n", "<Leader>B", function() dap.set_breakpoint() end)
+vim.keymap.set("n", "<Leader>lp", function() dap.set_breakpoint(nil, nil, vim.fn.input("Log point message: ")) end)
+vim.keymap.set("n", "<Leader>dr", function() dap.repl.open() end)
+vim.keymap.set("n", "<Leader>dl", function() dap.run_last() end)
+vim.keymap.set({"n", "v"}, "<Leader>dh", function()
+	require("dap.ui.widgets").hover()
+end)
+vim.keymap.set({"n", "v"}, "<Leader>dp", function()
+	require("dap.ui.widgets").preview()
+end)
+vim.keymap.set("n", "<Leader>df", function()
+	local widgets = require("dap.ui.widgets")
+	widgets.centered_float(widgets.frames)
+end)
+vim.keymap.set("n", "<Leader>ds", function()
+	local widgets = require("dap.ui.widgets")
+	widgets.centered_float(widgets.scopes)
+end)

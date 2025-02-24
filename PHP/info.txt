@@ -1,0 +1,36 @@
+phpinfo()
+PHP Version => 8.4.3
+
+System => Linux B218-03 5.15.153.1-microsoft-standard-WSL2 #1 SMP Fri Mar 29 23:14:13 UTC 2024 x86_64
+Build Date => Jan 22 2025 12:34:05
+Build System => Linux B218-03 5.15.153.1-microsoft-standard-WSL2 #1 SMP Fri Mar 29 23:14:13 UTC 2024 x86_64 GNU/Linux
+Configure Command =>  './configure'  '--enable-fpm' '--with-fpm-user=www-data' '--with-fpm-group=www-data' '--with-fpm-systemd' '--with-zlib' '--with-openssl' '--with-readline'
+Server API => Command Line Interface
+Virtual Directory Support => disabled
+Configuration File (php.ini) Path => /usr/local/lib
+Loaded Configuration File => /usr/local/lib/php.ini
+Scan this dir for additional .ini files => (none)
+Additional .ini files parsed => (none)
+PHP API => 20240924
+PHP Extension => 20240924
+Zend Extension => 420240924
+Zend Extension Build => API420240924,NTS
+PHP Extension Build => API20240924,NTS
+PHP Integer Size => 64 bits
+Debug Build => no
+Thread Safety => disabled
+Zend Signal Handling => enabled
+Zend Memory Manager => enabled
+Zend Multibyte Support => disabled
+Zend Max Execution Timers => disabled
+IPv6 Support => enabled
+DTrace Support => disabled
+
+Registered PHP Streams => https, ftps, compress.zlib, php, file, glob, data, http, ftp, phar
+Registered Stream Socket Transports => tcp, udp, unix, udg, ssl, tls, tlsv1.0, tlsv1.1, tlsv1.2, tlsv1.3
+Registered Stream Filters => zlib.*, convert.iconv.*, string.rot13, string.toupper, string.tolower, convert.*, consumed, dechunk
+
+This program makes use of the Zend Scripting Language Engine:
+Zend Engine v4.4.3, Copyright (c) Zend Technologies
+    with Xdebug v3.4.1, Copyright (c) 2002-2025, by Derick Rethans
+

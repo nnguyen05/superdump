@@ -14,6 +14,25 @@ local cmp = require("cmp")
 local lspconfig = require("lspconfig")
 local dap = require("dap")
 local dapui = require("dapui")
+local secrets = require("secrets")
+
+local outBuf = -1
+vim.api.nvim_create_user_command("DoSql", function()
+	vim.cmd("w")
+	local filename = vim.fn.expand("%:p")
+	local out = vim.api.nvim_exec2("!sqlcmd -U sa -P "..secrets.sqlpw.." -i "..filename, {output=true})
+	local hasWindow = vim.api.nvim_call_function("bufwinnr", { outBuf }) ~= -1
+	if outBuf == -1 or not hasWindow then
+		vim.cmd("botright new sqlcmd output")
+		outBuf = vim.api.nvim_get_current_buf()
+		local win = vim.api.nvim_get_current_win()
+		vim.api.nvim_win_set_buf(win, outBuf)
+	end
+	vim.api.nvim_set_option_value("readonly", false, {scope="local", buf=outBuf})
+	vim.api.nvim_buf_set_lines(outBuf, 0, -1, false, vim.fn.split(out.output, "\n"))
+	vim.api.nvim_set_option_value("readonly", true, {scope="local", buf=outBuf})
+	vim.api.nvim_set_option_value("modified", false, {scope="local", buf=outBuf})
+end, { desc = "Runs the current (saved) buffer through sqlcmd" })
 
 vim.g.clipboard = {
 	["name"] = "WslClipboard",
@@ -107,7 +126,8 @@ lspconfig.lua_ls.setup {
 	end,
 	settings = {
 		Lua = {}
-	}
+	},
+	cmd = { "/home/giannis/junk/lua-language-server/bin/lua-language-server" }
 }
 
 lspconfig.clangd.setup { }
@@ -133,10 +153,20 @@ lspconfig.mojo.setup{}
 lspconfig.sourcekit.setup{}
 
 --lspconfig.phpactor.setup{}
-lspconfig.intelephense.setup{}
+lspconfig.intelephense.setup{
+	settings = {
+		intelephense = {
+			environment = { phpVersion = "8.4.0" }
+		}
+	}
+}
 
 lspconfig.omnisharp.setup{
-    cmd = { "dotnet", "/home/giannis/junk/omnisharp/OmniSharp.dll" },
+	cmd = { "dotnet", "/home/giannis/junk/cs/omnisharp/OmniSharp.dll" },
+}
+
+require'lspconfig'.sqls.setup{
+	cmd = {"/home/giannis/junk/sqls/sqls", "-config", "/home/giannis/junk/sqls/config.yml"};
 }
 
 dapui.setup()

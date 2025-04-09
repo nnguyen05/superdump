@@ -14,7 +14,7 @@ local cmp = require("cmp")
 local lspconfig = require("lspconfig")
 local dap = require("dap")
 local dapui = require("dapui")
-local secrets = require("secrets")
+local secrets = require("config.secrets")
 
 local outBuf = -1
 vim.api.nvim_create_user_command("DoSql", function()

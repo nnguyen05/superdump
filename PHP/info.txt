@@ -1,10 +1,10 @@
 phpinfo()
-PHP Version => 8.4.3
+PHP Version => 8.4.4
 
-System => Linux B218-03 5.15.153.1-microsoft-standard-WSL2 #1 SMP Fri Mar 29 23:14:13 UTC 2024 x86_64
-Build Date => Jan 22 2025 12:34:05
-Build System => Linux B218-03 5.15.153.1-microsoft-standard-WSL2 #1 SMP Fri Mar 29 23:14:13 UTC 2024 x86_64 GNU/Linux
-Configure Command =>  './configure'  '--enable-fpm' '--with-fpm-user=www-data' '--with-fpm-group=www-data' '--with-fpm-systemd' '--with-zlib' '--with-openssl' '--with-readline'
+System => Linux B218-21 5.15.153.1-microsoft-standard-WSL2 #1 SMP Fri Mar 29 23:14:13 UTC 2024 x86_64
+Build Date => Mar 18 2025 09:36:52
+Build System => Linux B218-21 5.15.153.1-microsoft-standard-WSL2 #1 SMP Fri Mar 29 23:14:13 UTC 2024 x86_64 GNU/Linux
+Configure Command =>  './configure'  '--enable-fpm' '--with-fpm-user=www-data' '--with-fpm-group=www-data' '--with-fpm-systemd' '--with-zlib' '--with-openssl' '--with-readline' '--with-curl'
 Server API => Command Line Interface
 Virtual Directory Support => disabled
 Configuration File (php.ini) Path => /usr/local/lib
@@ -31,6 +31,5 @@ Registered Stream Socket Transports => tcp, udp, unix, udg, ssl, tls, tlsv1.0, t
 Registered Stream Filters => zlib.*, convert.iconv.*, string.rot13, string.toupper, string.tolower, convert.*, consumed, dechunk
 
 This program makes use of the Zend Scripting Language Engine:
-Zend Engine v4.4.3, Copyright (c) Zend Technologies
+Zend Engine v4.4.4, Copyright (c) Zend Technologies
     with Xdebug v3.4.1, Copyright (c) 2002-2025, by Derick Rethans
-

@@ -1,7 +1,8 @@
 vim.g.mapleader = " "
 vim.g.maplocalleader = "\\"
 vim.g.rust_recommended_style = false
-vim.g.python_recommended_style = false
+-- God is weeping
+vim.g.python_recommended_style = true -- false
 
 vim.opt.termguicolors = true
 
@@ -15,6 +16,25 @@ local lspconfig = require("lspconfig")
 local dap = require("dap")
 local dapui = require("dapui")
 local secrets = require("config.secrets")
+
+function PrintDiagnostics(opts, bufnr, line_nr, client_id)
+	bufnr = bufnr or 0
+	line_nr = line_nr or (vim.api.nvim_win_get_cursor(0)[1] - 1)
+	opts = opts or {['lnum'] = line_nr}
+
+	local line_diagnostics = vim.diagnostic.get(bufnr, opts)
+	if vim.tbl_isempty(line_diagnostics) then return end
+
+	local diagnostic_message = ""
+	for i, diagnostic in ipairs(line_diagnostics) do
+		diagnostic_message = diagnostic_message .. string.format("%d: %s", i, diagnostic.message or "")
+		print(diagnostic_message)
+		if i ~= #line_diagnostics then
+			diagnostic_message = diagnostic_message .. "\n"
+		end
+	end
+	vim.api.nvim_echo({{diagnostic_message, "Normal"}}, false, {})
+end
 
 local outBuf = -1
 vim.api.nvim_create_user_command("DoSql", function()
@@ -47,14 +67,12 @@ vim.g.clipboard = {
 	["cache_enabled"] = 0,
 }
 
-
 vim.diagnostic.config({
 	virtual_text = false
 })
 
 cmp.setup({
 	snippet = {
-		-- REQUIRED - you must specify a snippet engine
 		expand = function(args)
 			require("luasnip").lsp_expand(args.body)
 		end,
@@ -68,7 +86,6 @@ cmp.setup({
 		["<C-f>"] = cmp.mapping.scroll_docs(4),
 		["<C-Space>"] = cmp.mapping.complete(),
 		["<C-e>"] = cmp.mapping.abort(),
-		-- Accept currently selected item. Set `select` to `false` to only confirm explicitly selected items.
 		["<C-y>"] = cmp.mapping.confirm({ select = true }),
 	}),
 	sources = cmp.config.sources({
@@ -94,80 +111,75 @@ cmp.setup.cmdline(":", {
 	matching = { disallow_symbol_nonprefix_matching = false }
 })
 
-lspconfig.rust_analyzer.setup { }
+-- =============================================================================
+-- lspconfig
+-- =============================================================================
 
-lspconfig.lua_ls.setup {
-	on_init = function(client)
-		if client.workspace_folders then
-			local path = client.workspace_folders[1].name
-			if vim.uv.fs_stat(path.."/.luarc.json") or vim.uv.fs_stat(path.."/.luarc.jsonc") then
-				return
+local lsp = {
+	rust_analyzer = {},
+	lua_ls = {
+		on_init = function(client)
+			if client.workspace_folders then
+				local path = client.workspace_folders[1].name
+				if vim.uv.fs_stat(path.."/.luarc.json") or vim.uv.fs_stat(path.."/.luarc.jsonc") then
+					return
+				end
 			end
-		end
-		client.config.settings.Lua = vim.tbl_deep_extend("force", client.config.settings.Lua, {
-			runtime = {
-				-- Tell the language server which version of Lua you"re using
-				-- (most likely LuaJIT in the case of Neovim)
-				version = "LuaJIT"
-			},
-			-- Make the server aware of Neovim runtime files
-			workspace = {
-				checkThirdParty = false,
-				library = {
-					vim.env.VIMRUNTIME
-					-- Depending on the usage, you might want to add additional paths here.
-					-- "${3rd}/luv/library"
-					-- "${3rd}/busted/library",
+			client.config.settings.Lua = vim.tbl_deep_extend("force", client.config.settings.Lua, {
+				runtime = {
+					version = "LuaJIT"
+				},
+				workspace = {
+					checkThirdParty = false,
+					library = {
+						vim.env.VIMRUNTIME
+					}
 				}
-				-- or pull in all of "runtimepath". NOTE: this is a lot slower and will cause issues when working on your own configuration (see https://github.com/neovim/nvim-lspconfig/issues/3189)
-				-- library = vim.api.nvim_get_runtime_file("", true)
+			})
+		end,
+		settings = {
+			Lua = {}
+		},
+		cmd = { "lua-language-server" }
+	},
+	clangd = {},
+	ts_ls = {
+		init_options = { hostInfo = "neovim" },
+		cmd = {"npx", "typescript-language-server", "--stdio"},
+		filetypes = {
+			"javascript",
+			"javascriptreact",
+			"javascript.jsx",
+			"typescript",
+			"typescriptreact",
+			"typescript.tsx",
+		},
+		root_dir = lspconfig.util.root_pattern("tsconfig.json", "jsconfig.json", "package.json", ".git"),
+		single_file_support = true,
+	},
+	mojo = {},
+	sourcekit = {},
+	intelephense = {
+		settings = {
+			intelephense = {
+				environment = { phpVersion = "8.4.0" }
 			}
-		})
-	end,
-	settings = {
-		Lua = {}
-	},
-	cmd = { "/home/giannis/junk/lua-language-server/bin/lua-language-server" }
-}
-
-lspconfig.clangd.setup { }
-
-lspconfig.ts_ls.setup {
-	init_options = { hostInfo = "neovim" },
-	cmd = {"npx", "typescript-language-server", "--stdio"},
-	filetypes = {
-		"javascript",
-		"javascriptreact",
-		"javascript.jsx",
-		"typescript",
-		"typescriptreact",
-		"typescript.tsx",
-	},
-	root_dir = lspconfig.util.root_pattern("tsconfig.json", "jsconfig.json", "package.json", ".git"),
-	single_file_support = true,
-}
-
-
-lspconfig.mojo.setup{}
-
-lspconfig.sourcekit.setup{}
-
---lspconfig.phpactor.setup{}
-lspconfig.intelephense.setup{
-	settings = {
-		intelephense = {
-			environment = { phpVersion = "8.4.0" }
 		}
-	}
+	},
+	sqls = {
+		cmd = {"/home/giannis/junk/sqls/sqls", "-config", "/home/giannis/junk/sqls/config.yml"};
+	},
+	pylsp = {}
 }
 
-lspconfig.omnisharp.setup{
-	cmd = { "dotnet", "/home/giannis/junk/cs/omnisharp/OmniSharp.dll" },
-}
+for k,v in pairs(lsp) do
+	vim.lsp.enable(k)
+	vim.lsp.config(k, v or {})
+end
 
-require'lspconfig'.sqls.setup{
-	cmd = {"/home/giannis/junk/sqls/sqls", "-config", "/home/giannis/junk/sqls/config.yml"};
-}
+-- =============================================================================
+-- dap
+-- =============================================================================
 
 dapui.setup()
 
@@ -185,25 +197,6 @@ dap.configurations.php = {
 		port = 9003,
 	}
 }
-
-function PrintDiagnostics(opts, bufnr, line_nr, client_id)
-	bufnr = bufnr or 0
-	line_nr = line_nr or (vim.api.nvim_win_get_cursor(0)[1] - 1)
-	opts = opts or {['lnum'] = line_nr}
-
-	local line_diagnostics = vim.diagnostic.get(bufnr, opts)
-	if vim.tbl_isempty(line_diagnostics) then return end
-
-	local diagnostic_message = ""
-	for i, diagnostic in ipairs(line_diagnostics) do
-		diagnostic_message = diagnostic_message .. string.format("%d: %s", i, diagnostic.message or "")
-		print(diagnostic_message)
-		if i ~= #line_diagnostics then
-			diagnostic_message = diagnostic_message .. "\n"
-		end
-	end
-	vim.api.nvim_echo({{diagnostic_message, "Normal"}}, false, {})
-end
 
 -- You will likely want to reduce updatetime which affects CursorHold
 -- note: this setting is global and should be set only once
